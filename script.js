@@ -5,6 +5,7 @@ const todoList = document.querySelector('.todo-list');
 const filterOption = document.querySelector('.filter-todo');
 
 // event listeners
+document.addEventListener('DOMContentLoaded', getTodos);
 todoButton.addEventListener('click', addTodo);
 todoList.addEventListener('click', deleteCheck);
 filterOption.addEventListener('click', filterTodo);
@@ -24,7 +25,10 @@ function addTodo(e){
 
     newTodo.classList.add('todo-item');
     todoDiv.appendChild(newTodo);
-    // todoInput.value='';
+    // add to local storage
+    saveLocalTodos(todoInput.value);
+    todoInput.value='';
+
     // check mark button
     const  completedButton = document.createElement('button');
     completedButton.innerHTML = "<i class='fas fa-check'></i>";
@@ -38,7 +42,6 @@ function addTodo(e){
     // append to list
     todoList.appendChild(todoDiv);
     // clear todo input value
-    todoInput.value = '';
 
 
 
@@ -51,6 +54,7 @@ function deleteCheck(e){
         const todo = item.parentElement;
         // animation
         todo.classList.add('fall');
+        removeLocalTodos(todo);
 
         todo.addEventListener('transitionend', e=>{
             todo.remove();
@@ -94,3 +98,69 @@ function filterTodo(e) {
       }
     });
   }
+  function saveLocalTodos(todo){
+    // check do i alredy have thing in there&
+    let todos;
+    if (localStorage.getItem('todos')=== null){
+        todos = [];
+    } else {
+        todos = JSON.parse(localStorage.getItem('todos'));
+    }
+    todos.push(todo);
+    localStorage.setItem('todos', JSON.stringify(todos));
+}
+
+  function getTodos(){
+  
+    // check do i alredy have thing in there&
+    let todos;
+    if (localStorage.getItem('todos')=== null){
+        todos = [];
+    } else {
+        todos = JSON.parse(localStorage.getItem('todos'));
+    }
+    todos.forEach(function(todo){
+        // todo div
+        const todoDiv = document.createElement('div');
+        todoDiv.classList.add('todo');
+        // create li
+        const newTodo = document.createElement('li');
+        newTodo.innerText=todo;
+
+
+        newTodo.classList.add('todo-item');
+        todoDiv.appendChild(newTodo);
+      
+        // check mark button
+        const  completedButton = document.createElement('button');
+        completedButton.innerHTML = "<i class='fas fa-check'></i>";
+        completedButton.classList.add('complete-btn');
+        todoDiv.appendChild(completedButton);
+        // trash button
+        const  trashButton = document.createElement('button');
+        trashButton.innerHTML = "<i class='fas fa-trash'></i>";
+        trashButton.classList.add('trash-btn');
+        todoDiv.appendChild(trashButton);
+        // append to list
+        todoList.appendChild(todoDiv);
+    });
+}
+
+function removeLocalTodos(todo){
+    let todos;
+    if (localStorage.getItem('todos')=== null){
+        todos = [];
+    } else {
+        todos = JSON.parse(localStorage.getItem('todos'));
+    }
+    const todoIndex = todo.children[0].innerText;
+   todos.splice(todos.indexOf(todoIndex), 1);
+   localStorage.setItem('todos', JSON.stringify(todos));
+}
+
+// const todos = ['apple', 'pear', 'babana'];
+// // console.log(todos.indexOf('apple'));
+// const appleIndex = todos.indexOf('apple');
+// todos.splice(appleIndex, 1);
+
+// console.log(todos);
